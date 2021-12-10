@@ -1,0 +1,19 @@
+.itemList {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  margin-top: 5px;
+
+}
+
+.item {
+  margin-bottom: 5px;
+  padding: 5px 10px;
+  border: none;
+  background-color: cadetblue;
+  cursor: pointer;
+}
+
+.itemIsDrag {
+  background-color: skyblue;
+}

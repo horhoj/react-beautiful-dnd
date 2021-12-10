@@ -1,0 +1,28 @@
+.wrap {
+  display: flex;
+  padding: 20px;
+  background-color: #333;
+  width: fit-content;
+}
+
+.column {
+  margin: 5px;
+  background-color: darkslategrey;
+  color: #fff;
+  padding: 5px;
+  height: 300px;
+  width: 200px;
+}
+
+.columnIsDrag {
+  background-color: skyblue;
+}
+
+.columnTitle {
+  background-color: green;
+  padding: 10px;
+}
+
+
+
+
