@@ -22,7 +22,7 @@ export const ItemList: FC<ItemListProps> = ({ itemList, columnId }) => {
               <Draggable
                 key={item.id}
                 draggableId={item.id.toString()}
-                index={index}
+                index={item.id}
               >
                 {(itemDraggableProvided, itemDraggableSnapshot) => (
                   <li

@@ -34,13 +34,18 @@ export const DNDList: FC = () => {
     if (destination) {
       //извлекаем перетаскиваемый элемент из источника
       //индекс столбца в котором находиться элемент
-      // console.log(source, destination);
+      console.log(source, destination);
       if (source.droppableId === DROPPABLE_BOARD_ID) {
         //здесь обрабатываем перетаскивание столбцов
-        console.log('column');
+        const tempColumnList = [...columnList];
+        const tempCurrentColumn = tempColumnList.splice(source.index, 1);
+        tempColumnList.splice(destination.index, 0, ...tempCurrentColumn);
+        setColumnList(tempColumnList);
       } else {
         //здесь обрабатываем перетаскивание элементов
         console.log('element');
+        const tempItemList = [...itemList];
+        //НУЖНО ПРОДУМАТЬ КАК ХРАНИТЬ ДАННЫЕ
       }
     }
   };
@@ -67,11 +72,7 @@ export const DNDList: FC = () => {
                 {(columnDraggableProvided, columnDraggableSnapshot) => {
                   return (
                     <div
-                      className={`${styles.column} ${
-                        columnDraggableSnapshot.isDragging
-                          ? styles.columnIsDrag
-                          : ''
-                      }`}
+                      className={styles.column}
                       ref={columnDraggableProvided.innerRef}
                       {...columnDraggableProvided.draggableProps}
                     >
