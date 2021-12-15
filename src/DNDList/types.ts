@@ -1,10 +1,19 @@
 export interface Item {
-  id: number;
-  columnId: number;
   content: string;
 }
 
+export interface ItemsData {
+  [keys: number]: Item;
+}
+
 export interface Column {
-  id: number;
   title: string;
+}
+
+export interface ItemIdListsData {
+  [keys: number]: number[];
+}
+
+export interface ColumnsData {
+  [keys: number]: Column;
 }

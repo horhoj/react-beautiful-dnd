@@ -5,47 +5,64 @@ import {
   Draggable,
   DropResult,
 } from 'react-beautiful-dnd';
-import styles from './DNDList.module.scss';
 import { ItemList } from './ItemList';
-import { Column, Item } from './types';
+import { ColumnsData, ItemsData, ItemIdListsData } from './types';
+import { movingColumns, movingElements } from './helpers';
+import styles from './DNDList.module.scss';
 
 const DROPPABLE_BOARD_ID = 'project-kanban-board';
 
 export const DNDList: FC = () => {
-  const [columnList, setColumnList] = useState<Column[]>([
-    { id: 0, title: 'column 0' },
-    { id: 1, title: 'column 1' },
-    { id: 2, title: 'column 2' },
-  ]);
+  const [columnIdList, setColumnIdList] = useState<number[]>([0, 1, 2]);
 
-  const [itemList, setItemList] = useState<Item[]>([
-    { id: 0, columnId: 0, content: 'item 0' },
-    { id: 1, columnId: 0, content: 'item 1' },
-    { id: 2, columnId: 0, content: 'item 2' },
-    { id: 3, columnId: 1, content: 'item 3' },
-    { id: 4, columnId: 1, content: 'item 4' },
-    { id: 5, columnId: 1, content: 'item 5' },
-    { id: 6, columnId: 2, content: 'item 6' },
-    { id: 7, columnId: 2, content: 'item 7' },
-    { id: 8, columnId: 2, content: 'item 8' },
-  ]);
+  const [columnsData, setColumnsData] = useState<ColumnsData>({
+    0: { title: 'column0' },
+    1: { title: 'column1' },
+    2: { title: 'column2' },
+  });
+
+  const [itemIdListsData, setItemIdListsData] = useState<ItemIdListsData>({
+    // columnId --- [itemId, itemId ...]
+    0: [0, 1, 2],
+    1: [3, 4, 5],
+    2: [6, 7, 8, 9],
+  });
+
+  const [itemsData, setItemsData] = useState<ItemsData>({
+    0: { content: 'item 0' },
+    1: { content: 'item 1' },
+    2: { content: 'item 2' },
+    3: { content: 'item 3' },
+    4: { content: 'item 4' },
+    5: { content: 'item 5' },
+    6: { content: 'item 6' },
+    7: { content: 'item 7' },
+    8: { content: 'item 8' },
+    9: { content: 'item 9' },
+  });
 
   const onDragEnd = ({ destination, source }: DropResult) => {
     if (destination) {
-      //извлекаем перетаскиваемый элемент из источника
-      //индекс столбца в котором находиться элемент
-      console.log(source, destination);
+      // извлекаем перетаскиваемый элемент из источника
+      // индекс столбца в котором находиться элемент
       if (source.droppableId === DROPPABLE_BOARD_ID) {
-        //здесь обрабатываем перетаскивание столбцов
-        const tempColumnList = [...columnList];
-        const tempCurrentColumn = tempColumnList.splice(source.index, 1);
-        tempColumnList.splice(destination.index, 0, ...tempCurrentColumn);
-        setColumnList(tempColumnList);
+        // здесь обрабатываем перетаскивание столбцов
+        const newColumnIdList: number[] = movingColumns({
+          sourceColumnId: source.index,
+          destinationColumnId: destination.index,
+          columnIdList,
+        });
+        setColumnIdList(newColumnIdList);
       } else {
-        //здесь обрабатываем перетаскивание элементов
-        console.log('element');
-        const tempItemList = [...itemList];
-        //НУЖНО ПРОДУМАТЬ КАК ХРАНИТЬ ДАННЫЕ
+        // здесь обрабатываем перетаскивание элементов
+        const newItemIdListData: ItemIdListsData = movingElements({
+          sourceColumnId: Number.parseInt(source.droppableId),
+          sourceItemIndex: source.index,
+          destinationColumnId: Number.parseInt(destination.droppableId),
+          destinationItemIndex: destination.index,
+          itemIdListsData,
+        });
+        setItemIdListsData(newItemIdListData);
       }
     }
   };
@@ -63,10 +80,10 @@ export const DNDList: FC = () => {
             {...columnDroppableProvided.droppableProps}
             ref={columnDroppableProvided.innerRef}
           >
-            {columnList.map((column, index) => (
+            {columnIdList.map((columnId, index) => (
               <Draggable
-                key={column.id}
-                draggableId={column.title}
+                key={columnId}
+                draggableId={columnsData[columnId].title}
                 index={index}
               >
                 {(columnDraggableProvided, columnDraggableSnapshot) => {
@@ -76,18 +93,17 @@ export const DNDList: FC = () => {
                       ref={columnDraggableProvided.innerRef}
                       {...columnDraggableProvided.draggableProps}
                     >
-                      {/*Здесь перетаскиваем таща за заголовок*/}
+                      {/* Здесь перетаскиваем таща за заголовок*/}
                       <div
                         {...columnDraggableProvided.dragHandleProps}
                         className={styles.columnTitle}
                       >
-                        {column.title}
+                        {columnsData[columnId].title}
                       </div>
                       <ItemList
-                        itemList={itemList.filter(
-                          (item) => item.columnId === column.id,
-                        )}
-                        columnId={column.id}
+                        columnId={columnId}
+                        itemIdList={itemIdListsData[columnId]}
+                        itemsData={itemsData}
                       />
                     </div>
                   );

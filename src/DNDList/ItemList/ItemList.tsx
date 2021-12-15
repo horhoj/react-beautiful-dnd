@@ -1,14 +1,20 @@
 import { FC } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
-import { Item } from '../types';
+import { Item, ItemsData } from '../types';
 import styles from './ItemList.module.scss';
 
 interface ItemListProps {
-  itemList: Item[];
+  // itemList: Item[];
+  itemsData: ItemsData;
+  itemIdList: number[];
   columnId: number;
 }
 
-export const ItemList: FC<ItemListProps> = ({ itemList, columnId }) => {
+export const ItemList: FC<ItemListProps> = ({
+  itemIdList,
+  itemsData,
+  columnId,
+}) => {
   return (
     <div>
       <Droppable droppableId={columnId.toString()}>
@@ -18,11 +24,11 @@ export const ItemList: FC<ItemListProps> = ({ itemList, columnId }) => {
             ref={itemDroppableProvided.innerRef}
             className={styles.itemList}
           >
-            {itemList.map((item, index) => (
+            {itemIdList.map((itemId, index) => (
               <Draggable
-                key={item.id}
-                draggableId={item.id.toString()}
-                index={item.id}
+                key={itemId}
+                draggableId={itemId.toString()}
+                index={index}
               >
                 {(itemDraggableProvided, itemDraggableSnapshot) => (
                   <li
@@ -33,7 +39,7 @@ export const ItemList: FC<ItemListProps> = ({ itemList, columnId }) => {
                       itemDraggableSnapshot.isDragging ? styles.itemIsDrag : ''
                     }`}
                   >
-                    {item.content}
+                    {itemsData[itemId].content}
                   </li>
                 )}
               </Draggable>
